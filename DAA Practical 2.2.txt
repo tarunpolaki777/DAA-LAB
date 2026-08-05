@@ -1,0 +1,72 @@
+
+ Practical 2
+
+
+
+#include <iostream>
+#include <vector>
+#include <chrono>
+
+using namespace std;
+using namespace std::chrono;
+
+// Pass vector by const reference to avoid unnecessary memory copying
+int linearSearch(const vector<int>& arr, int key) {
+    for (int i = 0; i < arr.size(); i++) {
+        if (arr[i] == key) return i;
+    }
+    return -1;
+}
+
+int binarySearch(const vector<int>& arr, int key) {
+    int low = 0, high = arr.size() - 1;
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        if (arr[mid] == key) return mid;
+        (arr[mid] < key) ? low = mid + 1 : high = mid - 1;
+    }
+    return -1;
+}
+
+// Helper function to benchmark search algorithms and reduce repeated output code
+void benchmarkSearch(int (*searchFunc)(const vector<int>&, int), const vector<int>& arr, int key, const string& name) {
+    auto start = high_resolution_clock::now();
+    int index = searchFunc(arr, key);
+    auto stop = high_resolution_clock::now();
+
+    cout << "\n" << name << "\n";
+    if (index != -1) cout << "Element found at index " << index << endl;
+    else cout << "Element not found\n";
+
+    cout << "Time Taken : " 
+         << duration_cast<nanoseconds>(stop - start).count() 
+         << " nanoseconds\n";
+}
+
+int main() {
+    int n = 100000;
+    vector<int> arr(n);
+    for (int i = 0; i < n; i++) arr[i] = i + 1;
+
+    int key;
+    cout << "Enter element to search: ";
+    cin >> key;
+
+    benchmarkSearch(linearSearch, arr, key, "Linear Search");
+    benchmarkSearch(binarySearch, arr, key, "Binary Search");
+
+    return 0;
+}
+output : Enter element to search: 15
+
+Linear Search
+Element found at index 14
+Time Taken : 690 nanoseconds
+
+Binary Search
+Element found at index 14
+Time Taken : 1510 nanoseconds
+
+
+=== Code Execution Successful ===
+
